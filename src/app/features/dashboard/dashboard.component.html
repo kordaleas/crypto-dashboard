@@ -1,49 +1,64 @@
-<div class="container mx-auto p-6">
-  <ng-container *ngIf="loading$ | async">
-    <div class="flex justify-center items-center h-64">
-      <mat-spinner></mat-spinner>
-    </div>
-  </ng-container>
-
-  <mat-table
-    [dataSource]="(cryptos$ | async) || []"
-    *ngIf="!(loading$ | async)"
-    class="w-full bg-white shadow-lg rounded-lg"
-  >
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef class="bg-gray-100 font-bold">
-        Name
-      </mat-header-cell>
-      <mat-cell *matCellDef="let crypto" class="py-4">
-        {{ crypto.name }}
-      </mat-cell>
+<div class="h-screen flex flex-col">
+  <div class="flex-1 overflow-hidden">
+    <ng-container *ngIf="loading$ | async">
+      <div class="flex justify-center items-center h-64">
+        <mat-spinner></mat-spinner>
+      </div>
     </ng-container>
 
-    <ng-container matColumnDef="symbol">
-      <mat-header-cell *matHeaderCellDef class="bg-gray-100 font-bold">
-        Symbol
-      </mat-header-cell>
-      <mat-cell *matCellDef="let crypto" class="py-4">
-        {{ crypto.symbol }}
-      </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="current_price">
-      <mat-header-cell *matHeaderCellDef class="bg-gray-100 font-bold">
-        Price
-      </mat-header-cell>
-      <mat-cell *matCellDef="let crypto" class="py-4">
-        {{ crypto.current_price | currency }}
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      class="hover:bg-gray-50 transition-colors duration-150 ease-in-out"
+    <mat-table
+      [dataSource]="(cryptos$ | async) || []"
+      *ngIf="!(loading$ | async)"
+      class="w-full bg-white shadow-lg rounded-lg overflow-y-auto h-full"
     >
-    </mat-row>
-  </mat-table>
+      <!-- Your existing table content -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef class="bg-gray-100 font-bold">
+          Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let crypto" class="py-4">
+          {{ crypto.name }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="symbol">
+        <mat-header-cell *matHeaderCellDef class="bg-gray-100 font-bold">
+          Symbol
+        </mat-header-cell>
+        <mat-cell *matCellDef="let crypto" class="py-4">
+          {{ crypto.symbol }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="current_price">
+        <mat-header-cell *matHeaderCellDef class="bg-gray-100 font-bold">
+          Price
+        </mat-header-cell>
+        <mat-cell *matCellDef="let crypto" class="py-4">
+          {{ crypto.current_price | currency }}
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+      <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="hover:bg-gray-50 transition-colors duration-150 ease-in-out"
+      >
+      </mat-row>
+    </mat-table>
+  </div>
+
+  <div class="sticky bottom-0 w-full bg-white flex justify-center">
+    <mat-paginator
+      [length]="250"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)"
+      aria-label="Select page"
+      class="w-full"
+    >
+    </mat-paginator>
+  </div>
 
   <div
     *ngIf="error$ | async as error"
