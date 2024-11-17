@@ -9,11 +9,14 @@ import { selectAllCryptos, selectError, selectLoading } from '../../core/state/c
 import { Cryptocurrency } from '../../models/cryptocurrency.interface';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, MatPaginatorModule, MatSortModule
+    imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, MatPaginatorModule, MatSortModule, MatFormFieldModule,
+        MatInputModule
     ],
     templateUrl: './dashboard.component.html'
 })
@@ -36,8 +39,8 @@ export class DashboardComponent implements OnInit {
         'low_24h',
         'price_change_percentage_24h',
         'circulating_supply'
-      ];
-      
+    ];
+
     pageSize = 10;
     pageSizeOptions = [5, 10, 25, 100];
 
@@ -78,4 +81,9 @@ export class DashboardComponent implements OnInit {
             }
         }));
     }
+
+    applyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
+      }
 }
