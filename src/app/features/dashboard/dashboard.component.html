@@ -9,6 +9,11 @@
       matSort
       class="w-full bg-white shadow-lg rounded-lg overflow-y-auto h-full"
     >
+    <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="bg-gray-100 font-bold">ID</mat-header-cell>
+        <mat-cell *matCellDef="let crypto">{{crypto.id}}</mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="name">
         <mat-header-cell
           *matHeaderCellDef
@@ -48,28 +53,6 @@
         </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="price_change_24h">
-        <mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header
-          class="bg-gray-100 font-bold"
-        >
-          24h Change
-        </mat-header-cell>
-        <mat-cell *matCellDef="let crypto" class="py-4">
-          <span
-            [ngClass]="{
-              'text-green-500': crypto.price_change_24h > 0,
-              'text-red-500': crypto.price_change_24h < 0
-            }"
-            class="flex items-center"
-          >
-            {{ crypto.price_change_24h > 0 ? "↑" : "↓" }}
-            {{ crypto.price_change_24h | number : "1.2-2" }}%
-          </span>
-        </mat-cell>
-      </ng-container>
-
       <ng-container matColumnDef="market_cap">
         <mat-header-cell
           *matHeaderCellDef
@@ -82,6 +65,41 @@
             {{ crypto.market_cap > 1e9 ? (crypto.market_cap / 1e9 | number:'1.0-2') + 'B' : (crypto.market_cap / 1e6 | number:'1.0-2') + 'M' }}
         </mat-cell>
       </ng-container>
+
+      <ng-container matColumnDef="total_volume">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="bg-gray-100 font-bold">
+          Total Volume
+        </mat-header-cell>
+        <mat-cell *matCellDef="let crypto" class="py-4">
+          {{ crypto.total_volume > 1e9 ? (crypto.total_volume / 1e9 | number:'1.0-2') + 'B' : (crypto.total_volume / 1e6 | number:'1.0-2') + 'M' }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="high_24h">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="bg-gray-100 font-bold">24h High</mat-header-cell>
+        <mat-cell *matCellDef="let crypto">{{crypto.high_24h | currency}}</mat-cell>
+      </ng-container>
+      
+      <ng-container matColumnDef="low_24h">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="bg-gray-100 font-bold">24h Low</mat-header-cell>
+        <mat-cell *matCellDef="let crypto">{{crypto.low_24h | currency}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="price_change_percentage_24h">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="bg-gray-100 font-bold">24h Change %</mat-header-cell>
+        <mat-cell *matCellDef="let crypto">
+          <span [ngClass]="{'text-green-500': crypto.price_change_percentage_24h > 0, 'text-red-500': crypto.price_change_percentage_24h < 0}" class="flex items-center">
+            {{ crypto.price_change_percentage_24h > 0 ? '↑' : '↓' }}
+            {{crypto.price_change_percentage_24h | number:'1.2-2'}}%
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="circulating_supply">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="bg-gray-100 font-bold">Circulating Supply</mat-header-cell>
+        <mat-cell *matCellDef="let crypto">{{crypto.circulating_supply | number:'1.0-0'}}</mat-cell>
+      </ng-container>
+
 
       <mat-header-row
         *matHeaderRowDef="displayedColumns; sticky: true"
