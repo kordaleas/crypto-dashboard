@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     loading$: Observable<boolean>;
     error$: Observable<string | null>;
 
-    displayedColumns = ['name', 'symbol', 'current_price'];
+    displayedColumns = ['name', 'symbol', 'current_price', 'price_change_24h', 'market_cap'];
 
     pageSize = 10;
     pageSizeOptions = [5, 10, 25, 100];

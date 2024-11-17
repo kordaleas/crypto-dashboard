@@ -48,6 +48,41 @@
         </mat-cell>
       </ng-container>
 
+      <ng-container matColumnDef="price_change_24h">
+        <mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="bg-gray-100 font-bold"
+        >
+          24h Change
+        </mat-header-cell>
+        <mat-cell *matCellDef="let crypto" class="py-4">
+          <span
+            [ngClass]="{
+              'text-green-500': crypto.price_change_24h > 0,
+              'text-red-500': crypto.price_change_24h < 0
+            }"
+            class="flex items-center"
+          >
+            {{ crypto.price_change_24h > 0 ? "↑" : "↓" }}
+            {{ crypto.price_change_24h | number : "1.2-2" }}%
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="market_cap">
+        <mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="bg-gray-100 font-bold"
+        >
+          Market Cap
+        </mat-header-cell>
+        <mat-cell *matCellDef="let crypto" class="py-4">
+            {{ crypto.market_cap > 1e9 ? (crypto.market_cap / 1e9 | number:'1.0-2') + 'B' : (crypto.market_cap / 1e6 | number:'1.0-2') + 'M' }}
+        </mat-cell>
+      </ng-container>
+
       <mat-header-row
         *matHeaderRowDef="displayedColumns; sticky: true"
       ></mat-header-row>
