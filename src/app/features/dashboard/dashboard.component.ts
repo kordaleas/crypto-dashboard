@@ -11,12 +11,13 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
     imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, MatPaginatorModule, MatSortModule, MatFormFieldModule,
-        MatInputModule
+        MatInputModule, MatIconModule
     ],
     templateUrl: './dashboard.component.html'
 })

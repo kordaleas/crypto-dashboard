@@ -13,6 +13,9 @@
           placeholder="Search cryptocurrencies"
           #input
         />
+        <button *ngIf="input.value" matSuffix mat-icon-button aria-label="Clear" (click)="dataSource.filter = ''; input.value = ''">
+            <mat-icon>close</mat-icon>
+          </button>
       </mat-form-field>
     </div>
 
