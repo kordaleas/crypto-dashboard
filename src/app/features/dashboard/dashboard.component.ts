@@ -25,6 +25,14 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatSort) sort!: MatSort;
     dataSource = new MatTableDataSource<Cryptocurrency>();
 
+    activeFilters = {
+        general: '',
+        name: '',
+        symbol: '',
+        marketCap: 0,
+        volume: 0
+    };
+
     cryptos$: Observable<Cryptocurrency[]>;
     loading$: Observable<boolean>;
     error$: Observable<string | null>;
@@ -53,6 +61,19 @@ export class DashboardComponent implements OnInit {
         this.cryptos$.subscribe(data => {
             this.dataSource.data = data;
         });
+
+        this.dataSource.filterPredicate = (data: Cryptocurrency, _: string) => {
+            const matchesGeneral = !this.activeFilters.general ||
+                Object.values(data).some(value =>
+                    value?.toString().toLowerCase().includes(this.activeFilters.general)
+                );
+
+            return matchesGeneral &&
+                (!this.activeFilters.name || data.name.toLowerCase().includes(this.activeFilters.name.toLowerCase())) &&
+                (!this.activeFilters.symbol || data.symbol.toLowerCase().includes(this.activeFilters.symbol.toLowerCase())) &&
+                (!this.activeFilters.marketCap || data.market_cap >= this.activeFilters.marketCap) &&
+                (!this.activeFilters.volume || data.total_volume >= this.activeFilters.volume);
+        };
     }
 
     ngOnInit() {
@@ -84,7 +105,51 @@ export class DashboardComponent implements OnInit {
     }
 
     applyFilter(event: Event) {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
-      }
+        this.activeFilters.general = (event.target as HTMLInputElement).value.trim().toLowerCase();
+        this.dataSource.filter = 'trigger';
+    }
+
+    filterByName(event: Event) {
+        this.activeFilters.name = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = 'trigger';
+    }
+
+    filterBySymbol(event: Event) {
+        this.activeFilters.symbol = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = 'trigger';
+    }
+
+    filterByMarketCap(event: Event) {
+        this.activeFilters.marketCap = parseFloat((event.target as HTMLInputElement).value) || 0;
+        this.dataSource.filter = 'trigger';
+    }
+
+    filterByVolume(event: Event) {
+        this.activeFilters.volume = parseFloat((event.target as HTMLInputElement).value) || 0;
+        this.dataSource.filter = 'trigger';
+    }
+
+    clearNameFilter(input: HTMLInputElement) {
+        input.value = '';
+        this.activeFilters.name = '';
+        this.dataSource.filter = 'trigger';
+    }
+
+    clearSymbolFilter(input: HTMLInputElement) {
+        input.value = '';
+        this.activeFilters.symbol = '';
+        this.dataSource.filter = 'trigger';
+    }
+
+    clearMarketCapFilter(input: HTMLInputElement) {
+        input.value = '';
+        this.activeFilters.marketCap = 0;
+        this.dataSource.filter = 'trigger';
+    }
+
+    clearVolumeFilter(input: HTMLInputElement) {
+        input.value = '';
+        this.activeFilters.volume = 0;
+        this.dataSource.filter = 'trigger';
+    }
 }

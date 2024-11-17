@@ -6,7 +6,7 @@
 
     <div class="p-4">
       <mat-form-field class="w-full">
-        <mat-label>Filter</mat-label>
+        <mat-label>Search</mat-label>
         <input
           matInput
           (keyup)="applyFilter($event)"
@@ -18,6 +18,40 @@
           </button>
       </mat-form-field>
     </div>
+
+    <div class="p-4 flex gap-4">
+        <mat-form-field>
+          <mat-label>Filter by Name</mat-label>
+          <input matInput (keyup)="filterByName($event)" placeholder="Search by name" #nameInput>
+          <button *ngIf="nameInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearNameFilter(nameInput)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Filter by Symbol</mat-label>
+            <input matInput (keyup)="filterBySymbol($event)" placeholder="Search by symbol" #symbolInput>
+            <button *ngIf="symbolInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearSymbolFilter(symbolInput)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Minimum Market Cap</mat-label>
+            <input matInput type="number" (keyup)="filterByMarketCap($event)" placeholder="Enter minimum market cap" #marketCapInput>
+            <button *ngIf="marketCapInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearMarketCapFilter(marketCapInput)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Minimum Volume</mat-label>
+            <input matInput type="number" (keyup)="filterByVolume($event)" placeholder="Enter minimum volume" #volumeInput>
+            <button *ngIf="volumeInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearVolumeFilter(volumeInput)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+      </div>
 
     <mat-table
       [dataSource]="dataSource"
