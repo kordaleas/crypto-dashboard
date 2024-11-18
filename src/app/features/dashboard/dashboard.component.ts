@@ -12,12 +12,14 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { HighchartsChartModule } from 'highcharts-angular';
+import * as Highcharts from 'highcharts';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
     imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, MatPaginatorModule, MatSortModule, MatFormFieldModule,
-        MatInputModule, MatIconModule
+        MatInputModule, MatIconModule, HighchartsChartModule
     ],
     templateUrl: './dashboard.component.html'
 })
@@ -52,6 +54,29 @@ export class DashboardComponent implements OnInit {
 
     pageSize = 10;
     pageSizeOptions = [5, 10, 25, 100];
+
+    Highcharts: typeof Highcharts = Highcharts;
+    chartOptions: Highcharts.Options = {
+      chart: {
+        type: 'bar'
+      },
+      title: {
+        text: 'Top Cryptocurrencies by Market Cap'
+      },
+      xAxis: {
+        type: 'category'
+      },
+      yAxis: {
+        title: {
+          text: 'Market Cap (USD)'
+        }
+      },
+      series: [{
+        name: 'Market Cap',
+        type: 'bar',
+        data: []
+      }]
+    };
 
     constructor(private store: Store) {
         this.cryptos$ = this.store.select(selectAllCryptos);
@@ -126,6 +151,12 @@ export class DashboardComponent implements OnInit {
 
     filterByVolume(event: Event) {
         this.activeFilters.volume = parseFloat((event.target as HTMLInputElement).value) || 0;
+        this.dataSource.filter = 'trigger';
+    }
+
+    clearSearch(input: HTMLInputElement) {
+        input.value = '';
+        this.activeFilters.general = '';
         this.dataSource.filter = 'trigger';
     }
 

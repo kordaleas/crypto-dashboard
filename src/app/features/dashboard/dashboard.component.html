@@ -1,10 +1,15 @@
 <div class="h-screen flex flex-col">
-  <div class="flex-1 overflow-hidden">
-    <div *ngIf="loading$ | async" class="flex justify-center items-center h-64">
-      <mat-spinner></mat-spinner>
-    </div>
+  <div class="p-2 bg-white border-b">
+    <h6 class="text-3xl font-bold text-gray-900">Crypto Dashboard</h6>
+    <p class="mt-2 text-gray-600">
+      Track real-time cryptocurrency data powered by CoinGecko API. Monitor
+      prices, market caps, and trading volumes with comprehensive filtering and
+      sorting capabilities.
+    </p>
+  </div>
 
-    <div class="p-4">
+  <div class="flex flex-wrap gap-6 p-6">
+    <div class="flex-1 min-w-[300px]">
       <mat-form-field class="w-full">
         <mat-label>Search</mat-label>
         <input
@@ -13,50 +18,115 @@
           placeholder="Search cryptocurrencies"
           #input
         />
-        <button *ngIf="input.value" matSuffix mat-icon-button aria-label="Clear" (click)="dataSource.filter = ''; input.value = ''">
-            <mat-icon>close</mat-icon>
-          </button>
+        <button
+          *ngIf="input.value"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clearSearch(input)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-form-field>
+
+      <div class="flex flex-col gap-4">
+        <div class="flex gap-4">
+          <mat-form-field class="w-1/2">
+            <mat-label>Filter by Name</mat-label>
+            <input
+              matInput
+              (keyup)="filterByName($event)"
+              placeholder="Search by name"
+              #nameInput
+            />
+            <button
+              *ngIf="nameInput.value"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="clearNameFilter(nameInput)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field class="w-1/2">
+            <mat-label>Filter by Symbol</mat-label>
+            <input
+              matInput
+              (keyup)="filterBySymbol($event)"
+              placeholder="Search by symbol"
+              #symbolInput
+            />
+            <button
+              *ngIf="symbolInput.value"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="clearSymbolFilter(symbolInput)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <div class="flex gap-4">
+          <mat-form-field class="w-1/2">
+            <mat-label>Minimum Market Cap</mat-label>
+            <input
+              matInput
+              type="number"
+              (keyup)="filterByMarketCap($event)"
+              placeholder="Enter minimum market cap"
+              #marketCapInput
+            />
+            <button
+              *ngIf="marketCapInput.value"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="clearMarketCapFilter(marketCapInput)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field class="w-1/2">
+            <mat-label>Minimum Volume</mat-label>
+            <input
+              matInput
+              type="number"
+              (keyup)="filterByVolume($event)"
+              placeholder="Enter minimum volume"
+              #volumeInput
+            />
+            <button
+              *ngIf="volumeInput.value"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="clearVolumeFilter(volumeInput)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
 
-    <div class="p-4 flex gap-4">
-        <mat-form-field>
-          <mat-label>Filter by Name</mat-label>
-          <input matInput (keyup)="filterByName($event)" placeholder="Search by name" #nameInput>
-          <button *ngIf="nameInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearNameFilter(nameInput)">
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
+    <highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions" class="lg:w-1/2 min-h-[300px]">
+    </highcharts-chart>
+  </div>
 
-        <mat-form-field>
-            <mat-label>Filter by Symbol</mat-label>
-            <input matInput (keyup)="filterBySymbol($event)" placeholder="Search by symbol" #symbolInput>
-            <button *ngIf="symbolInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearSymbolFilter(symbolInput)">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>Minimum Market Cap</mat-label>
-            <input matInput type="number" (keyup)="filterByMarketCap($event)" placeholder="Enter minimum market cap" #marketCapInput>
-            <button *ngIf="marketCapInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearMarketCapFilter(marketCapInput)">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>Minimum Volume</mat-label>
-            <input matInput type="number" (keyup)="filterByVolume($event)" placeholder="Enter minimum volume" #volumeInput>
-            <button *ngIf="volumeInput.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearVolumeFilter(volumeInput)">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-      </div>
+  <div class="flex-1">
+    <div *ngIf="loading$ | async" class="flex justify-center items-center h-64">
+      <mat-spinner></mat-spinner>
+    </div>
 
     <mat-table
       [dataSource]="dataSource"
       matSort
-      class="w-full bg-white shadow-lg rounded-lg overflow-y-auto h-full"
+      class="w-full bg-white shadow-lg rounded-lg h-full"
     >
       <ng-container matColumnDef="id">
         <mat-header-cell
