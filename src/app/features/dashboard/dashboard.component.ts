@@ -71,6 +71,9 @@ export class DashboardComponent implements OnInit {
           text: 'Market Cap (USD)'
         }
       },
+      tooltip: {
+        pointFormat: '{point.y:,.0f} USD'
+      },
       series: [{
         name: 'Market Cap',
         type: 'bar',
@@ -85,6 +88,7 @@ export class DashboardComponent implements OnInit {
 
         this.cryptos$.subscribe(data => {
             this.dataSource.data = data;
+            this.updateChart(data);
         });
 
         this.dataSource.filterPredicate = (data: Cryptocurrency, _: string) => {
@@ -116,6 +120,22 @@ export class DashboardComponent implements OnInit {
     ngAfterViewInit() {
         this.dataSource.sort = this.sort;
     }
+
+    updateChart(data: Cryptocurrency[]) {
+        const chartData = data.slice(0, 10).map(crypto => ({
+          name: crypto.name,
+          y: crypto.market_cap
+        }));
+      
+        this.chartOptions = {
+            ...this.chartOptions,
+            series: [{
+              name: 'Market Cap',
+              type: 'bar',
+              data: chartData
+            }]
+          };
+      }
 
     onPageChange(event: PageEvent) {
         this.store.dispatch(loadCryptos({
