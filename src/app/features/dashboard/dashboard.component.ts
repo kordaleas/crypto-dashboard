@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { HighchartsChartModule } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-dashboard',
@@ -37,7 +38,7 @@ export class DashboardComponent implements OnInit {
 
     cryptos$: Observable<Cryptocurrency[]>;
     loading$: Observable<boolean>;
-    error$: Observable<string | null>;
+    error$: Observable<any | null>;
 
     displayedColumns = [
         'id',
@@ -81,7 +82,7 @@ export class DashboardComponent implements OnInit {
       }]
     };
 
-    constructor(private store: Store) {
+    constructor(private store: Store, private snackBar: MatSnackBar) {
         this.cryptos$ = this.store.select(selectAllCryptos);
         this.loading$ = this.store.select(selectLoading);
         this.error$ = this.store.select(selectError);
@@ -90,6 +91,18 @@ export class DashboardComponent implements OnInit {
             this.dataSource.data = data;
             this.updateChart(data);
         });
+
+        this.error$.subscribe(error => {
+            if (error) {
+                debugger;
+              this.snackBar.open(error.statusText, 'Close', {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+              });
+            }
+          });
 
         this.dataSource.filterPredicate = (data: Cryptocurrency, _: string) => {
             const matchesGeneral = !this.activeFilters.general ||

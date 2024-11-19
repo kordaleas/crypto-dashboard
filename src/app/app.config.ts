@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -8,6 +8,7 @@ import { provideEffects } from '@ngrx/effects';
 import { CryptoEffects } from './core/state/crypto.effects';
 import { provideHttpClient } from '@angular/common/http';
 import { cryptoReducer } from './core/state/crypto.reducers';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,5 +22,6 @@ export const appConfig: ApplicationConfig = {
     //   connectInZone: true
     // }),
     provideHttpClient(),
+    importProvidersFrom(MatSnackBarModule)
   ],
 };
