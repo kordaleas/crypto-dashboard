@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { loadCryptos } from '../../core/state/crypto.actions';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { selectAllCryptos, selectError, selectLoading } from '../../core/state/crypto.selectors';
 import { Cryptocurrency } from '../../models/cryptocurrency.interface';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -15,6 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { HighchartsChartModule } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ChartDataPoint } from '../../models/chart-data-point.model';
+import { ChartConfigService } from '../../core/services/chart-config.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -25,6 +27,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
+    private readonly DEFAULT_PAGE_SIZE = 10;
+    private readonly MAX_CHART_ITEMS = 10;
+
     @ViewChild(MatSort) sort!: MatSort;
     dataSource = new MatTableDataSource<Cryptocurrency>();
 
@@ -53,69 +58,39 @@ export class DashboardComponent implements OnInit {
         'circulating_supply'
     ];
 
-    pageSize = 10;
+    pageSize = this.DEFAULT_PAGE_SIZE;
     pageSizeOptions = [5, 10, 25, 100];
 
     Highcharts: typeof Highcharts = Highcharts;
-    chartOptions: Highcharts.Options = {
-      chart: {
-        type: 'bar'
-      },
-      title: {
-        text: 'Top Cryptocurrencies by Market Cap'
-      },
-      xAxis: {
-        type: 'category'
-      },
-      yAxis: {
-        title: {
-          text: 'Market Cap (USD)'
-        }
-      },
-      tooltip: {
-        pointFormat: '{point.y:,.0f} USD'
-      },
-      series: [{
-        name: 'Market Cap',
-        type: 'bar',
-        data: []
-      }]
-    };
+    chartOptions: Highcharts.Options;
 
-    constructor(private store: Store, private snackBar: MatSnackBar) {
+    private destroy$ = new Subject<void>();
+
+    constructor(private store: Store, private snackBar: MatSnackBar, private chartConfigService: ChartConfigService
+    ) {
         this.cryptos$ = this.store.select(selectAllCryptos);
         this.loading$ = this.store.select(selectLoading);
         this.error$ = this.store.select(selectError);
 
-        this.cryptos$.subscribe(data => {
+        this.cryptos$.pipe(takeUntil(this.destroy$)).subscribe(data => {
             this.dataSource.data = data;
             this.updateChart(data);
         });
 
-        this.error$.subscribe(error => {
+        this.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
             if (error) {
-                debugger;
-              this.snackBar.open(error.statusText, 'Close', {
-                duration: 5000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top',
-                panelClass: ['error-snackbar']
-              });
+                this.snackBar.open(error.statusText, 'Close', {
+                    duration: 5000,
+                    horizontalPosition: 'center',
+                    verticalPosition: 'top',
+                    panelClass: ['error-snackbar']
+                });
             }
-          });
+        });
 
-        this.dataSource.filterPredicate = (data: Cryptocurrency, _: string) => {
-            const matchesGeneral = !this.activeFilters.general ||
-                Object.values(data).some(value =>
-                    value?.toString().toLowerCase().includes(this.activeFilters.general)
-                );
+        this.dataSource.filterPredicate = (data: Cryptocurrency) => this.createFilterPredicate(data);
 
-            return matchesGeneral &&
-                (!this.activeFilters.name || data.name.toLowerCase().includes(this.activeFilters.name.toLowerCase())) &&
-                (!this.activeFilters.symbol || data.symbol.toLowerCase().includes(this.activeFilters.symbol.toLowerCase())) &&
-                (!this.activeFilters.marketCap || data.market_cap >= this.activeFilters.marketCap) &&
-                (!this.activeFilters.volume || data.total_volume >= this.activeFilters.volume);
-        };
+        this.chartOptions = this.chartConfigService.getBaseConfig();
     }
 
     ngOnInit() {
@@ -135,20 +110,20 @@ export class DashboardComponent implements OnInit {
     }
 
     updateChart(data: Cryptocurrency[]) {
-        const chartData = data.slice(0, 10).map(crypto => ({
-          name: crypto.name,
-          y: crypto.market_cap
+        const chartData: ChartDataPoint[] = data.slice(0, this.MAX_CHART_ITEMS).map(crypto => ({
+            name: crypto.name,
+            y: crypto.market_cap
         }));
-      
+
         this.chartOptions = {
             ...this.chartOptions,
             series: [{
-              name: 'Market Cap',
-              type: 'bar',
-              data: chartData
+                name: 'Market Cap',
+                type: 'bar',
+                data: chartData
             }]
-          };
-      }
+        };
+    }
 
     onPageChange(event: PageEvent) {
         this.store.dispatch(loadCryptos({
@@ -215,5 +190,23 @@ export class DashboardComponent implements OnInit {
         input.value = '';
         this.activeFilters.volume = 0;
         this.dataSource.filter = 'trigger';
+    }
+
+    private createFilterPredicate(data: Cryptocurrency): boolean {
+        const matchesGeneral = !this.activeFilters.general ||
+            Object.values(data).some(value =>
+                value?.toString().toLowerCase().includes(this.activeFilters.general)
+            );
+
+        return matchesGeneral &&
+            (!this.activeFilters.name || data.name.toLowerCase().includes(this.activeFilters.name.toLowerCase())) &&
+            (!this.activeFilters.symbol || data.symbol.toLowerCase().includes(this.activeFilters.symbol.toLowerCase())) &&
+            (!this.activeFilters.marketCap || data.market_cap >= this.activeFilters.marketCap) &&
+            (!this.activeFilters.volume || data.total_volume >= this.activeFilters.volume);
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }
