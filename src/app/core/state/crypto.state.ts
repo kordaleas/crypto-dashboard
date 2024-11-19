@@ -1,4 +1,4 @@
-import { Cryptocurrency } from "../../models/cryptocurrency.interface";
+import { Cryptocurrency } from "../../models/cryptocurrency.model";
 
 export interface CryptoState {
   cryptos: Cryptocurrency[];

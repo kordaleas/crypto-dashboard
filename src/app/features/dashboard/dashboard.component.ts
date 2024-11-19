@@ -6,7 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { loadCryptos } from '../../core/state/crypto.actions';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { selectAllCryptos, selectError, selectLoading } from '../../core/state/crypto.selectors';
-import { Cryptocurrency } from '../../models/cryptocurrency.interface';
+import { Cryptocurrency } from '../../models/cryptocurrency.model';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +17,7 @@ import * as Highcharts from 'highcharts';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChartDataPoint } from '../../models/chart-data-point.model';
 import { ChartConfigService } from '../../core/services/chart-config.service';
+import { FilterOptions } from '../../models/filter-options.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -33,7 +34,7 @@ export class DashboardComponent implements OnInit {
     @ViewChild(MatSort) sort!: MatSort;
     dataSource = new MatTableDataSource<Cryptocurrency>();
 
-    activeFilters = {
+    activeFilters: FilterOptions = {
         general: '',
         name: '',
         symbol: '',

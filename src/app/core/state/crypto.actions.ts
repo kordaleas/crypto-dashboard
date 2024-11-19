@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { CryptoQueryParams } from '../../models/crypto-params.model';
-import { Cryptocurrency } from '../../models/cryptocurrency.interface';
+import { Cryptocurrency } from '../../models/cryptocurrency.model';
 
 export const loadCryptos = createAction(
   '[Crypto] Load Cryptocurrencies',
