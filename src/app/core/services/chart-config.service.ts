@@ -14,6 +14,15 @@ export class ChartConfigService {
             yAxis: {
                 title: {
                     text: 'Market Cap (USD)'
+                },
+                labels: {
+                    formatter: function () {
+                        const value = this.value as number;
+                        if (value >= 1e9) {
+                            return (value / 1e9) + 'B';
+                        }
+                        return (value / 1e6) + 'M';
+                    }
                 }
             },
             tooltip: {
@@ -24,7 +33,7 @@ export class ChartConfigService {
                   24h Change: <span style="color: {point.changeColor}">{point.priceChange}%</span><br/>
                   Volume: ${'{point.volume:,.0f}'} USD
                 `
-              },
+            },
             series: [{
                 name: 'Market Cap',
                 type: 'bar',
