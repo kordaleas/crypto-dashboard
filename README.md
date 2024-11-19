@@ -32,17 +32,12 @@ git clone https://github.com/kordaleas/crypto-dashboard.git
 npm install
 ```
 
-3. Install Angular CLI globally:
-```bash
-npm install -g @angular/cli
-```
-
-4. Start the development server:
+3. Start the development server:
 ```bash
 ng serve
 ```
 
-5. Navigate to `http://localhost:4200/` in your browser.
+4. Navigate to `http://localhost:4200/` in your browser.
 
 ## Project Structure
 
