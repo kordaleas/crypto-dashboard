@@ -17,8 +17,14 @@ export class ChartConfigService {
                 }
             },
             tooltip: {
-                pointFormat: '{point.y:,.0f} USD'
-            },
+                headerFormat: '<b>{point.key}</b><br/>',
+                pointFormat: `
+                  Market Cap: ${'{point.y:,.0f}'} USD<br/>
+                  Price: ${'{point.price:,.2f}'} USD<br/>
+                  24h Change: <span style="color: {point.changeColor}">{point.priceChange}%</span><br/>
+                  Volume: ${'{point.volume:,.0f}'} USD
+                `
+              },
             series: [{
                 name: 'Market Cap',
                 type: 'bar',

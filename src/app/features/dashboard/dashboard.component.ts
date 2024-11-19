@@ -113,7 +113,11 @@ export class DashboardComponent implements OnInit {
     updateChart(data: Cryptocurrency[]) {
         const chartData: ChartDataPoint[] = data.slice(0, this.MAX_CHART_ITEMS).map(crypto => ({
             name: crypto.name,
-            y: crypto.market_cap
+            y: crypto.market_cap,
+            price: crypto.current_price,
+            priceChange: crypto.price_change_percentage_24h,
+            volume: crypto.total_volume,
+            changeColor: crypto.price_change_percentage_24h >= 0 ? '#22c55e' : '#ef4444'    
         }));
 
         this.chartOptions = {
