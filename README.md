@@ -24,7 +24,7 @@ A modern cryptocurrency dashboard built with Angular that displays real-time mar
 
 1. Clone the repository:
 ```bash
-git clone [your-repo-url]
+git clone https://github.com/kordaleas/crypto-dashboard.git
 ```
 
 2. Install dependencies:
